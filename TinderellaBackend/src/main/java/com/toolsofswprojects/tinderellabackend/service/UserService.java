@@ -1,5 +1,6 @@
 package com.toolsofswprojects.tinderellabackend.service;
 
+import com.toolsofswprojects.tinderellabackend.exception.BadRequestException;
 import com.toolsofswprojects.tinderellabackend.exception.UserNotFoundException;
 import com.toolsofswprojects.tinderellabackend.model.User_t;
 import com.toolsofswprojects.tinderellabackend.repo.UserRepo;
@@ -20,6 +21,10 @@ public class UserService {
     }
 
     public User_t addUser(User_t user){
+        Boolean isEmailExists = userRepo.selectExistsEmail(user.getEmail());
+        if (isEmailExists){
+            throw new BadRequestException("Eamil" + user.getEmail() + " taken");
+        }
         user.setUserCode(UUID.randomUUID().toString());
         return userRepo.save(user);
 

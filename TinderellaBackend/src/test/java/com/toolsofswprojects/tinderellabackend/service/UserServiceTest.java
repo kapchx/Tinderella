@@ -1,20 +1,82 @@
 package com.toolsofswprojects.tinderellabackend.service;
 
-import org.junit.jupiter.api.AfterEach;
+import com.toolsofswprojects.tinderellabackend.exception.BadRequestException;
+import com.toolsofswprojects.tinderellabackend.model.User_t;
+import com.toolsofswprojects.tinderellabackend.repo.UserRepo;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.ArgumentCaptor;
+import org.mockito.Mock;
+import org.mockito.junit.jupiter.MockitoExtension;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.BDDMockito.given;
+import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.verify;
 
+
+@ExtendWith(MockitoExtension.class)
 class UserServiceTest {
 
-    @AfterEach
-    void tearDown() {
+    @Mock
+    private UserRepo userRepo;
+    private UserService underTest;
+
+
+    @BeforeEach
+    void setUp(){
+        underTest = new UserService(userRepo);
     }
 
     @Test
-    @Disabled
     void addUser() {
+        //given
+        User_t user = new User_t(
+                12L,
+                "name",
+                "email",
+                "256",
+                "sadas",
+                "1"
+        );
+        //when
+        underTest.addUser(user);
+
+        //then
+        ArgumentCaptor<User_t> userArgumentCaptor =
+                ArgumentCaptor.forClass(User_t.class);
+
+        verify(userRepo).save(userArgumentCaptor.capture());
+
+        User_t capturedUser =userArgumentCaptor.getValue();
+
+        assertThat(capturedUser).isEqualTo(user);
+    }
+
+    @Test
+    void willThroWhenEmailIsTaken() {
+        //given
+        User_t user = new User_t(
+                12L,
+                "name",
+                "email",
+                "256",
+                "sadas",
+                "1"
+        );
+        //when
+
+        given(userRepo.selectExistsEmail(user.getEmail())).willReturn(true);
+
+        //then
+       assertThatThrownBy(()-> underTest.addUser(user))
+               .isInstanceOf(BadRequestException.class)
+               .hasMessageContaining("Eamil" + user.getEmail() + " taken");
+       verify(userRepo, never()).save(any());
     }
 
     @Test
@@ -31,5 +93,7 @@ class UserServiceTest {
 
     @Test
     void deleteUser() {
+        underTest.deleteUser(10L);
+        verify(userRepo).deleteUserById(10L);
     }
 }
