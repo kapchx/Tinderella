@@ -34,12 +34,12 @@ public class UserService {
     }
 
     public User_t findUserById(Long id){
-        return userRepo.findEmployeeById(id).
+        return userRepo.findUserById(id).
                 orElseThrow(() -> new UserNotFoundException(" User by id " + id + " was not found"));
     }
 
 
     public void deleteUser(Long id){
-        userRepo.deleteEmployeeById(id);
+        userRepo.deleteUserById(id);
     }
-}
+    }
