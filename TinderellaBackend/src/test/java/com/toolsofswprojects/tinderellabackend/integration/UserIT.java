@@ -56,7 +56,9 @@ public class UserIT {
                 email,
                 "256",
                 "dsadas",
-                "1"
+                "1",
+                "password",
+                User_t.UserRole.ROLE_USER
         );
 
         // when

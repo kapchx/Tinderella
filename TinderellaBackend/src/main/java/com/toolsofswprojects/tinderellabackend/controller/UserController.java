@@ -7,6 +7,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Optional;
 
 @RestController
 @RequestMapping("/user")
@@ -30,15 +31,21 @@ public class UserController {
         return new ResponseEntity<>(user, HttpStatus.OK);
     }
 
+    @PostMapping("/register")
+    public ResponseEntity<User_t> registerUser(@RequestBody User_t user) {
+        User_t newUser = userService.addUser(user);
+        return new ResponseEntity<>(newUser, HttpStatus.CREATED);
+    }
+
     @PostMapping("/add")
     public ResponseEntity<User_t> addUser(@RequestBody User_t user) {
         User_t newUser = userService.addUser(user);
         return new ResponseEntity<>(newUser, HttpStatus.CREATED);
     }
 
-    @PutMapping("/update")
-    public ResponseEntity<User_t> updateUser(@RequestBody User_t user) {
-        User_t updatedUser = userService.updateUser(user);
+    @PatchMapping("/update/{id}")
+    public ResponseEntity<User_t> updateUser(@PathVariable("id")Long id, @RequestBody User_t user) {
+        User_t updatedUser = userService.updateUser(id, user);
         return new ResponseEntity<>(updatedUser, HttpStatus.CREATED);
     }
 

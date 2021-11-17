@@ -28,7 +28,9 @@ class UserRepoTest {
                 "email",
                 "256",
                 "sadas",
-                "1"
+                "1",
+                "password",
+                User_t.UserRole.ROLE_USER
         );
         User_t savedUser = underTest.save(user);
         underTest.deleteUserById(savedUser.getId());

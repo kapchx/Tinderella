@@ -4,7 +4,6 @@ import com.toolsofswprojects.tinderellabackend.exception.BadRequestException;
 import com.toolsofswprojects.tinderellabackend.model.User_t;
 import com.toolsofswprojects.tinderellabackend.repo.UserRepo;
 import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.ArgumentCaptor;
@@ -41,7 +40,9 @@ class UserServiceTest {
                 "email",
                 "256",
                 "sadas",
-                "1"
+                "1",
+                "password",
+                User_t.UserRole.ROLE_USER
         );
         //when
         underTest.addUser(user);
@@ -66,7 +67,9 @@ class UserServiceTest {
                 "email",
                 "256",
                 "sadas",
-                "1"
+                "1",
+                "password",
+                User_t.UserRole.ROLE_USER
         );
         //when
 
