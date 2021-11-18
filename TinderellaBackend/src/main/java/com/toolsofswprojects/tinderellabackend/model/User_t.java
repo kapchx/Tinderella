@@ -12,8 +12,14 @@ public class User_t implements Serializable {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(nullable = false, updatable = false)
     private Long id;
+
+    @NotNull
     @Column
     private String name;
+
+    @NotNull
+    @Column
+    private String userName;
 
     @Column
     private String email;
@@ -53,6 +59,7 @@ public class User_t implements Serializable {
         this.password = password;
         this.role = role;
     }
+    public String getUserName() { return userName; }
 
     public UserRole getRole() { return role; }
 
@@ -82,6 +89,8 @@ public class User_t implements Serializable {
         return userCode;
     }
 
+
+    public void setUserName(String userName) { this.userName = userName; }
 
     public void setRole(UserRole role) { this.role = role; }
 

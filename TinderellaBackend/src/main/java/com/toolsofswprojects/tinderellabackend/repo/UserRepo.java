@@ -14,6 +14,8 @@ public interface UserRepo extends JpaRepository<User_t, Long> {
 
     Optional<User_t> findUserById(Long id);
 
+    Optional<User_t> findUserByUserName(String userName);
+
     Optional<User_t> findUserByEmail(String email);
 
     @Query("" +
@@ -23,4 +25,12 @@ public interface UserRepo extends JpaRepository<User_t, Long> {
             "WHERE s.email = ?1"
     )
     Boolean selectExistsEmail(String email);
+
+    @Query("" +
+            "SELECT CASE WHEN COUNT(s) > 0 THEN " +
+            "TRUE ELSE FALSE END " +
+            "FROM User_t s " +
+            "WHERE s.userName = ?1"
+    )
+    Boolean selectExistsUserName(String email);
 }

@@ -19,6 +19,11 @@ public class UserController {
         this.userService = userService;
     }
 
+    @GetMapping("/login")
+    public String getLogin() {
+        return "login";
+    }
+
     @GetMapping("/all")
     public ResponseEntity<List<User_t>> getAllUsers() {
         List<User_t> users = userService.findAllUsers();

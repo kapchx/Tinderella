@@ -4,33 +4,36 @@ import com.toolsofswprojects.tinderellabackend.exception.BadRequestException;
 import com.toolsofswprojects.tinderellabackend.exception.UserNotFoundException;
 import com.toolsofswprojects.tinderellabackend.model.User_t;
 import com.toolsofswprojects.tinderellabackend.repo.UserRepo;
+import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
+import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.core.userdetails.UserDetailsService;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.List;
-import java.util.Optional;
-import java.util.UUID;
+import java.util.*;
 
 @Service
 @Transactional
-public class UserService {
+@RequiredArgsConstructor
+public class UserService implements UserDetailsService {
 
-    @Autowired
-    private BCryptPasswordEncoder passwordEncoder;
 
     private final UserRepo userRepo;
-
-    @Autowired
-    public UserService(UserRepo userRepo) {
-        this.userRepo = userRepo;
-    }
+    private final PasswordEncoder passwordEncoder;
 
     public User_t addUser(User_t user){
         Boolean isEmailExists = userRepo.selectExistsEmail(user.getEmail());
         if (isEmailExists){
             throw new BadRequestException("Eamil" + user.getEmail() + " taken");
+        }
+        Boolean isUserNameExists = userRepo.selectExistsUserName(user.getEmail());
+        if (isUserNameExists){
+            throw new BadRequestException("Username" + user.getUserName() + " taken");
         }
         user.setPassword(passwordEncoder.encode(user.getPassword()));
         user.setRole(User_t.UserRole.ROLE_USER);
@@ -67,5 +70,16 @@ public class UserService {
         User_t userToBeDeleted = userRepo.findUserById(id).
                 orElseThrow(() -> new UserNotFoundException(" User by id " + id + " was not found"));
         userRepo.deleteUserById(id);
+    }
+
+    @Override
+    public UserDetails loadUserByUsername(String userName) throws UsernameNotFoundException {
+        Optional<User_t> user = userRepo.findUserByUserName(userName);
+        if(user.isEmpty()) {
+            throw new UsernameNotFoundException("User not found in the database");
+        }
+        Collection<SimpleGrantedAuthority> authorities = new ArrayList<>();
+        authorities.add(new SimpleGrantedAuthority(user.get().getRole().toString()));
+        return new org.springframework.security.core.userdetails.User(user.get().getUserName(), user.get().getPassword(), authorities);
     }
 }
